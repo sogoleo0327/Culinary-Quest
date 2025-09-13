@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Products - Culinary Quest</title>
+  <style>
+    /* --- Basic Setup & Fonts --- */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 80px auto 2rem; /* Add margin-top to clear fixed header */
+    }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: #f0f0f0;
+      color: #555;
+      border-top: 1px solid #e0e0e0;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* --- Header Controls & Socials (Copied from main page) --- */
+    .top-left-controls { position: fixed; top: 18px; left: 18px; z-index: 1001; display: flex; flex-direction: row; gap: 10px; align-items: center; }
+    .social-links { position: fixed; top: 18px; right: 18px; z-index: 1001; display: flex; gap: 12px; }
+    .social-icon { transition: transform 0.2s ease-in-out; }
+    .social-icon:hover { transform: scale(1.15); animation: social-jiggle 0.4s; }
+    .social-icon svg { width: 36px; height: 36px; }
+    .instagram-link svg { width: 32px; height: 32px; }
+    .youtube-link .youtube-bg { fill: #FF0000; }
+    .youtube-link .youtube-play { fill: #FFFFFF; }
+    .instagram-link .instagram-bg { fill: url(#ig-grad); }
+    .instagram-link .instagram-fg { fill: #fff; }
+    @keyframes social-jiggle { 0%, 100% { transform: rotate(0) scale(1.15); } 25% { transform: rotate(-8deg) scale(1.15); } 75% { transform: rotate(8deg) scale(1.15); } }
+    .dark-mode-btn, .surprise-btn, .something-btn { border: none; border-radius: 8px; padding: 0.7rem 1.3rem; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: background 0.2s, color 0.2s, transform 0.1s; }
+    .dark-mode-btn { background: #222; color: #fff; }
+    .dark-mode-btn:hover { animation: shake 0.3s; background: #444; color: #ff7043; }
+    .surprise-btn { background: #ff7043; color: #fff; position: relative; }
+    .surprise-btn:hover { background: #f7c67a; color: #222; animation: chefkiss 0.4s; }
+    .something-btn { background: #eee; color: #222; text-decoration: none; }
+    .something-btn:hover { background: #ff7043; color: #fff; animation: shake 0.3s; }
+    .something-btn {
+      position: relative; /* For tooltip */
+    }
+    .something-btn::after {
+      content: 'You are here!';
+      position: absolute;
+      bottom: 120%; /* Position ABOVE the button */
+      left: 50%;
+      transform: translateX(-50%) translateY(10px); /* Start slightly lower */
+      background-color: #111;
+      color: #00f6ff; /* Cyberpunk cyan */
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #00f6ff;
+      box-shadow: 0 0 10px rgba(0, 246, 255, 0.5);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .something-btn:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0); /* Move to final position */
+    }
+    @keyframes shake { 0% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } 100% { transform: translateX(0); } }
+    @keyframes chefkiss { 0% { transform: scale(1) rotate(0deg); } 20% { transform: scale(1.1) rotate(-5deg); } 40% { transform: scale(1.15) rotate(5deg); } 60% { transform: scale(1.1) rotate(-3deg); } 80% { transform: scale(1.05) rotate(3deg); } 100% { transform: scale(1) rotate(0deg); } }
+
+    /* --- Dark Mode (Copied from main page) --- */
+    body.dark-mode { background: #181818; color: #f3f3f3; }
+    body.dark-mode main { background: #232323; color: #f3f3f3; }
+    body.dark-mode footer { background: #232323; border-top-color: #333; color: #aaa; }
+    body.dark-mode .product-container { background: #2c2c2c; border-color: #444; }
+    body.dark-mode .buy-btn { background: #444; color: #ff7043; }
+    body.dark-mode .buy-btn:hover { background: #ff7043; color: #fff; }
+    body.dark-mode .back-link { color: #ff7043; }
+
+    /* --- Product Page Specific Styles --- */
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #ff7043;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .product-container {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 3rem;
+      align-items: center;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border: 1px solid #eee;
+      transition: background-color 0.3s, border-color 0.3s;
+      margin-bottom: 3rem; /* Add space between products */
+    }
+
+    .product-image img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      background-color: #eee; /* Placeholder background */
+    }
+    .product-details h1 {
+      font-size: 3rem;
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+      color: #ff7043;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .product-details .tagline {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #777;
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+    }
+    body.dark-mode .product-details .tagline {
+      color: #bbb;
+    }
+    .product-details .description {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+    .product-info {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: rgba(0,0,0,0.03);
+      border-left: 4px solid #ff7043;
+      border-radius: 4px;
+    }
+    body.dark-mode .product-info {
+      background: rgba(255,255,255,0.05);
+    }
+    .product-info span {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .product-purchase {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .product-purchase .price {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #26a69a;
+    }
+    .buy-btn {
+      background: #26a69a;
+      color: #fff;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+    .buy-btn:hover:not(:disabled) {
+      background: #00897b;
+      transform: translateY(-2px);
+    }
+    .buy-btn:disabled {
+      background: #ccc;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .product-container {
+        grid-template-columns: 1fr;
+      }
+      .product-details h1 {
+        font-size: 2.5rem;
+      }
+    }
+
+    /* --- Purchase Animation & Modal --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none; /* Hidden by default */
+      justify-content: center;
+      align-items: center;
+      z-index: 10001;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.visible {
+      display: flex;
+      opacity: 1;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 2rem 3rem;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .modal-content p { margin-top: 0; font-size: 1.2rem; }
+    .modal-content button { margin: 0.5rem; padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    #confirmYes { background: #26a69a; color: #fff; border: 1px solid #26a69a; }
+    #confirmNo { background: #eee; color: #333; border: 1px solid #ccc; }
+    body.dark-mode .modal-content { background: #3a3a3a; color: #f3f3f3; }
+    body.dark-mode #confirmNo { background: #555; color: #f3f3f3; border-color: #666; }
+
+    .delivery-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      display: none;
+      z-index: 10000;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .road { position: absolute; bottom: 0; width: 100%; height: 40px; background: #444; border-top: 4px dashed #888; }
+    .road::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: repeating-linear-gradient(to right, #fdd835 0, #fdd835 40px, transparent 40px, transparent 80px);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .truck {
+      position: absolute;
+      bottom: 20px; /* Lowered the car to sit better on the road */
+      left: -180px; /* Adjusted for new width */
+      width: 160px; /* Made the car narrower */
+      height: auto;
+    }
+    .truck.driving {
+      animation-name: drive-across;
+      animation-timing-function: linear;
+      animation-fill-mode: forwards;
+    }
+    @keyframes drive-across {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(100vw + 250px)); }
+    }
+
+    /* --- Surprise: Cyberpunk Glitch Trail (Copied) --- */
+    .particle { position: fixed; left: 0; top: 0; background: var(--c); border-radius: 0; pointer-events: none; z-index: 9999; animation: particle-fly 1s linear forwards; box-shadow: 0 0 8px var(--c), 0 0 12px var(--c); }
+    @keyframes particle-fly { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); opacity: 0; } }
+
+    /* --- Raining Food Surprise (Copied) --- */
+    .food-particle { position: fixed; top: -50px; pointer-events: none; z-index: 10000; font-size: 2rem; opacity: 0; animation: food-fall linear forwards; }
+    @keyframes food-fall { 0% { transform: translateY(0vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(var(--r-end)); opacity: 1; } }
+
+    /* --- Toast Notification (Copied) --- */
+    .toast-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background-color: #f0e2b6; background-image: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%), linear-gradient(145deg, #f3d9a2, #e6c37f); border: 8px solid #8c5811; color: #4a2500; text-shadow: 1px 1px 1px rgba(240, 226, 182, 0.7); border-radius: 20px 20px 12px 12px; padding: 12px 20px; box-shadow: 0 8px 20px rgba(92, 44, 6, 0.3), inset 0 0 15px rgba(140, 88, 17, 0.5); z-index: 1002; font-size: 1.1rem; font-weight: bold; display: flex; align-items: center; gap: 10px; animation: toast-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards, toast-out 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) 3.5s forwards; }
+    @keyframes toast-in { from { transform: translate(-50%, 100px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+    @keyframes toast-out { from { transform: translate(-50%, 0); opacity: 1; } to { transform: translate(-50%, 100px); opacity: 0; } }
+  </style>
+</head>
+<body>
+
+  <div class="top-left-controls">
+    <button id="darkModeToggle" class="dark-mode-btn">Dark</button>
+    <button id="chefSurpriseBtn" class="surprise-btn">?</button>
+    <div class="products-btn-container">
+      <button id="somethingBtn" class="something-btn">Products</button>
+    </div>
+  </div>
+
+  <div class="social-links">
+    <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon instagram-link" title="Visit us on Instagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><defs><radialGradient id="ig-grad" cx="0.3" cy="1.2" r="1.2"><stop offset="0" stop-color="#F58529"></stop><stop offset="0.4" stop-color="#DD2A7B"></stop><stop offset="0.9" stop-color="#8134AF"></stop></radialGradient></defs><path class="instagram-bg" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.28.072-1.687.072-4.947s-.014-3.667-.072-4.947C23.728 2.69 21.308.272 16.947.072 15.667.014 15.26 0 12 0z"></path><path class="instagram-fg" d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"></path><circle class="instagram-fg" cx="18.406" cy="5.594" r="1.44"></circle></svg></a>
+    <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" class="social-icon youtube-link" title="Visit us on YouTube"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path class="youtube-bg" d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2A29 29 0 0 0 23 11.75a29 29 0 0 0-.46-5.33z"></path><polygon class="youtube-play" points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg></a>
+  </div>
+
+  <main>
+    <a href="cooking-landing.html" class="back-link">← Back to Home</a>
+    <section class="product-container">
+      <div class="product-image">
+        <!-- You can replace this with an actual image if you have one! -->
+        <img src="Images/Ramen.jpg" alt="A close-up shot of a steaming bowl of Flash-Prep Noodles, with perfectly separated noodles in a rich miso broth, next to its sleek, matte black and orange packaging.">
+      </div>
+      <div class="product-details">
+        <h1>Flash-Prep Noodles</h1>
+        <p class="tagline">Gourmet Noodles. Ready in 60 Seconds.</p>
+        <p class="description">
+          Forget watery broth and limp noodles. Our Flash-Prep system uses pressure-sealed, fresh-cooked noodles that are flash-hydrated in your microwave. The result is a perfect 'al dente' bite every time. The included flavor capsule contains a chef-developed concentrated broth that infuses every strand with rich, authentic taste. It's the quality of a noodle bar, with the speed your life demands.
+        </p>
+        <div class="product-info">
+          <span><strong>Flavor:</strong> Tonkotsu-Style Pork Broth</span>
+          <span><strong>Cook Time:</strong> 60 Seconds</span>
+          <span><strong>Shelf Life:</strong> 6 Months Refrigerated</span>
+        </div>
+        <div class="product-purchase">
+          <span class="price">$14.99</span>
+          <button class="buy-btn">Buy Now</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="product-container">
+      <div class="product-image">
+        <img src="Images/Tab.jpg" alt="A sleek, minimalist box for 'Aroma-Tabs', with one of the small, translucent dissolvable strips shown up close.">
+      </div>
+      <div class="product-details">
+        <h1>Aroma-Tabs</h1>
+        <p class="tagline">The Essence of Flavor.</p>
+        <p class="description">
+          Aroma-Tabs are a new frontier in culinary exploration. Each tab is a fast-dissolving strip made from edible film, infused with micro-encapsulated aromatic oils. As the tab dissolves on your tongue, it releases a precisely engineered sequence of scents directly to your olfactory system. Since smell accounts for up to 80% of what we perceive as flavor, this allows you to experience the complex essence of foods like 'Himalayan Truffle' or 'Madagascar Vanilla' without any of the calories. It's a tool for chefs, dieters, and the culinarily curious.
+        </p>
+        <div class="product-info">
+          <span><strong>System:</strong> Olfactory-Based Flavor Simulation</span>
+          <span><strong>Contents:</strong> 30 Aroma-Tabs (Assorted Starter Pack)</span>
+          <span><strong>Note:</strong> Simulates flavor via scent; does not provide texture or basic tastes (sweet, salty).</span>
+        </div>
+        <div class="product-purchase">
+          <span class="price">$29.99</span>
+          <button class="buy-btn">Buy Now</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2024 Culinary Quest. All rights reserved.
+  </footer>
+
+  <!-- Modal and Animation Elements -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal-content">
+      <p>Confirm your purchase?</p>
+      <button id="confirmYes">Yes, Buy Now!</button>
+      <button id="confirmNo">Cancel</button>
+    </div>
+  </div>
+  <div id="deliveryAnimation" class="delivery-container">
+    <div class="road"></div>
+    <svg id="deliveryTruck" class="truck" viewBox="0 0 150 60" xmlns="http://www.w3.org/2000/svg">
+      <!-- Ground Shadow -->
+      <ellipse cx="75" cy="55" rx="60" ry="5" fill="rgba(0,0,0,0.1)"></ellipse>
+      <!-- Wheels -->
+      <g>
+        <circle cx="35" cy="45" r="10" fill="#2c3e50"></circle>
+        <circle cx="115" cy="45" r="10" fill="#2c3e50"></circle>
+        <circle cx="35" cy="45" r="6" fill="#bdc3c7"></circle>
+        <circle cx="115" cy="45" r="6" fill="#bdc3c7"></circle>
+        <circle cx="35" cy="45" r="2" fill="#7f8c8d"></circle>
+        <circle cx="115" cy="45" r="2" fill="#7f8c8d"></circle>
+      </g>
+      <!-- Main Body -->
+      <path d="M10,45 C5,45 5,25 15,25 L30,15 L100,15 L125,25 C140,27 145,45 135,45 Z" fill="#3498db"></path>
+      <!-- Cabin/Roof -->
+      <path d="M35,15 L95,15 L110,25 L45,25 Z" fill="#2980b9"></path>
+      <!-- Window Reflection -->
+      <path d="M48,25 L80,17 L93,17 L107,25 Z" fill="#ecf0f1" opacity="0.7"></path>
+      <!-- Lights -->
+      <rect x="130" y="32" width="10" height="5" rx="2" fill="#f1c40f"></rect>
+      <rect x="8" y="32" width="10" height="5" rx="2" fill="#e74c3c"></rect>
+    </svg>
+  </div>
+
+  <script>
+    // --- Shared JS for consistent functionality ---
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- Dark Mode Toggle ---
+      const btn = document.getElementById('darkModeToggle');
+      function setDarkMode(on) {
+        document.body.classList.toggle('dark-mode', on);
+        btn.textContent = on ? 'Light' : 'Dark';
+      }
+      setDarkMode(document.body.classList.contains('dark-mode'));
+      btn.onclick = function() {
+        setDarkMode(!document.body.classList.contains('dark-mode'));
+      };
+
+      // --- Custom Toast Notification ---
+      function showToast(message) {
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) { existingToast.remove(); }
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 4000);
+      }
+
+      // --- Chef's Kiss Surprise Button ---
+      const surpriseBtn = document.getElementById('chefSurpriseBtn');
+      if (surpriseBtn) {
+        surpriseBtn.onclick = function() {
+          showToast("Mwah! A Chef's Kiss! 😘👨‍🍳");
+          const foodEmojis = ['🥕', '🍅', '🥦', '🍕', '🍔', '🍓', '🥑', '🌽', '🌶️', '🧀', '🍳'];
+          const particleCount = 30;
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'food-particle';
+            document.body.appendChild(particle);
+            particle.textContent = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+            const startX = Math.random() * 100;
+            const size = Math.random() * 1.5 + 1;
+            const rotation = Math.random() * 720 - 360;
+            const duration = Math.random() * 2 + 3;
+            const delay = Math.random() * 2;
+            particle.style.left = `${startX}vw`;
+            particle.style.fontSize = `${size}rem`;
+            particle.style.setProperty('--r-end', `${rotation}deg`);
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+            setTimeout(() => { particle.remove(); }, (duration + delay) * 1000);
+          }
+        };
+      }
+
+      // --- Cyberpunk Glitch Trail ---
+      let particleThrottle = false;
+      document.addEventListener('mousemove', function(e) {
+        if (!particleThrottle) {
+          particleThrottle = true;
+          setTimeout(() => { particleThrottle = false; }, 25);
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          document.body.appendChild(particle);
+          const size = Math.random() * 4 + 2;
+          const colors = ['#00f6ff', '#ff00ff', '#41ffca'];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          particle.style.setProperty('--c', color);
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${e.clientX}px`;
+          particle.style.top = `${e.clientY}px`;
+          const endX = (Math.random() - 0.5) * 150;
+          const endY = (Math.random() - 0.5) * 150;
+          const rotation = (Math.random() - 0.5) * 720;
+          particle.style.setProperty('--x', `${endX}px`);
+          particle.style.setProperty('--y', `${endY}px`);
+          particle.style.setProperty('--r', `${rotation}deg`);
+          setTimeout(() => { particle.remove(); }, 1000);
+        }
+      });
+
+      // --- Purchase Animation Logic ---
+      const buyBtns = document.querySelectorAll('.buy-btn');
+      const confirmModal = document.getElementById('confirmModal');
+      const modalText = document.querySelector('#confirmModal p');
+      const confirmYes = document.getElementById('confirmYes');
+      const confirmNo = document.getElementById('confirmNo');
+      const deliveryAnimation = document.getElementById('deliveryAnimation');
+      const deliveryTruck = document.getElementById('deliveryTruck');
+      let activeBuyButton = null; // To keep track of which button was clicked
+
+      buyBtns.forEach(button => {
+        button.addEventListener('click', () => {
+          activeBuyButton = button; // Store the clicked button
+          const productContainer = button.closest('.product-container');
+          const productName = productContainer.querySelector('h1').textContent;
+          modalText.textContent = `Confirm your purchase of ${productName}?`;
+          confirmModal.classList.add('visible');
+        });
+      });
+
+      confirmNo.addEventListener('click', () => {
+        confirmModal.classList.remove('visible');
+        activeBuyButton = null; // Reset
+      });
+
+      confirmYes.addEventListener('click', () => {
+        if (!activeBuyButton) return; // Safety check
+
+        confirmModal.classList.remove('visible');
+        activeBuyButton.disabled = true;
+        activeBuyButton.textContent = 'Order Placed!';
+
+        const randomSeconds = Math.random() * 15 + 20; // Random float between 20.0 and 35.0
+        const durationMs = randomSeconds * 1000;
+
+        showToast(`Dispatching now! Estimated arrival: ${Math.round(randomSeconds)} seconds...`);
+
+        deliveryAnimation.style.display = 'block';
+        deliveryTruck.style.animationDuration = `${randomSeconds}s`;
+        deliveryTruck.classList.add('driving');
+
+        // After animation
+        setTimeout(() => {
+          deliveryAnimation.style.display = 'none';
+          deliveryTruck.classList.remove('driving'); // Reset for next time
+          deliveryTruck.style.animationDuration = ''; // Clean up inline style
+
+          // The reveal
+          showToast("Just kidding! This is a demo. Your products aren't real... yet! 😉");
+
+        }, durationMs); // Match animation duration
+      });
+    });
+  </script>
+</body>
+</html>

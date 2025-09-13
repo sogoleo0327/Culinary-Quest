@@ -1,0 +1,263 @@
+body {
+  margin: 0; /* Removes default browser margin around the page */
+  font-family:'Times New Roman', Arial, sans-serif; /* Sets the main font for the page */
+  background: #fff8f0; /* Sets a light beige background color */
+  color: #333; /* Sets the default text color to dark gray */
+}
+header {
+  background: #ff7043; /* Sets a vibrant orange background for the header */
+  color: #fff; /* Sets header text color to white */
+  padding: 2rem 0 1.5rem 0; /* Adds space above and below header content */
+  text-align: center; /* Centers the header content horizontally */
+}
+header h1 {
+  margin: 0; /* Removes default margin from the h1 */
+  font-size: 2.5rem; /* Makes the main heading large */
+  letter-spacing: 2px; /* Adds space between letters for style */
+}
+header p {
+  margin: 0.5rem 0 0 0; /* Adds space above the paragraph, none below */
+  font-size: 1.2rem; /* Slightly larger font for the slogan */
+}
+.hero {
+  color: #fff;
+  height: auto;
+  padding: 0;
+  text-align: center;
+  position: relative;
+  overflow: visible;
+  background: #000;
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-video {
+  position: static;
+  display: block;
+  margin: 0 auto;
+  width: 90vw;
+  height: 250px;
+  object-fit: contain;
+  background: #000;
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+
+.hero-content {
+  position: static;
+  z-index: 2;
+  width: 100%;
+  max-width: 700px;
+  margin: 1rem auto 0 auto;
+  text-align: center;
+  background: rgba(255,255,255,0.95);
+  color: #ff7043;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  padding: 2rem 1rem 2rem 1rem;
+}
+.hero h2 {
+  font-size: 2.2rem; /* Large subheading */
+  margin-bottom: 1rem; /* Space below the heading */
+}
+.hero p {
+  font-size: 1.2rem; /* Slightly larger paragraph text */
+  margin-bottom: 2rem; /* Space below the paragraph */
+}
+.hero a {
+  background: #ff7043; /* Orange background for the button */
+  color: #fff; /* White text for the button */
+  padding: 0.8rem 2rem; /* Padding inside the button */
+  border-radius: 30px; /* Rounded button corners */
+  text-decoration: none; /* Removes underline from link */
+  font-weight: bold; /* Bold text for emphasis */
+  font-size: 1rem; /* Standard button text size */
+  transition: background 0.2s; /* Smooth background color transition on hover */
+}
+.hero a:hover {
+  background: #d84315; /* Darker orange on hover */
+}
+
+.browse-btn {
+  background: #ff7043;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 0.8rem 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  margin-top: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.browse-btn:hover {
+  background: #d84315;
+  transform: translateY(-2px) scale(1.04);
+}
+main {
+  max-width: 1100px; /* Limits main content width for readability */
+  margin: 0 auto; /* Centers main content horizontally */
+  padding: 2rem 1rem; /* Adds space inside the main area */
+}
+.section-title {
+  font-size: 2rem; /* Large section headings */
+  margin-bottom: 1rem; /* Space below the title */
+  color: #ff7043; /* Orange color for section titles */
+  text-align: center; /* Centers section titles */
+}
+.recipes {
+  display: flex; /* Uses flexbox for layout */
+  flex-wrap: wrap; /* Allows recipe cards to wrap to next line */
+  gap: 2rem; /* Space between recipe cards */
+  justify-content: center; /* Centers recipe cards horizontally */
+  margin-bottom: 3rem; /* Space below the recipes section */
+}
+.recipe-card {
+  background: #fff; /* White background for cards */
+  border-radius: 12px; /* Rounded corners for cards */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07); /* Subtle shadow for depth */
+  overflow: hidden; /* Clips child elements to card border */
+  width: 300px; /* Fixed width for each card */
+  transition: transform 0.2s; /* Smooth transform on hover */
+  cursor: pointer; /* Shows pointer cursor on hover */
+}
+.recipe-card:hover {
+  transform: translateY(-5px) scale(1.03); /* Slightly lifts and enlarges card on hover */
+}
+
+.recipe-card a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  height: 100%;
+}
+.recipe-card img {
+  width: 100%; /* Image fills card width */
+  height: 180px; /* Fixed image height */
+  object-fit: cover; /* Crops image to fill area without distortion */
+}
+.recipe-card .card-content {
+  padding: 1rem; /* Space inside card content */
+}
+.recipe-card h3 {
+  margin: 0 0 0.5rem 0; /* Space below the recipe name */
+  font-size: 1.2rem; /* Medium heading size */
+  color: #ff7043; /* Orange for recipe names */
+}
+.about {
+  background: #fff3e0; /* Light orange background for about section */
+  border-radius: 10px; /* Rounded corners */
+  padding: 2rem; /* Space inside about section */
+  margin-bottom: 3rem; /* Space below about section */
+  text-align: center; /* Centers about text */
+}
+.newsletter {
+  background: #ffe0b2; /* Pale orange background for newsletter */
+  border-radius: 10px; /* Rounded corners */
+  padding: 2rem; /* Space inside newsletter section */
+  text-align: center; /* Centers newsletter content */
+}
+.newsletter input[type="email"] {
+  padding: 0.7rem; /* Space inside email input */
+  border: none; /* Removes default border */
+  border-radius: 20px; /* Rounded input corners */
+  width: 220px; /* Fixed width for input */
+  margin-right: 1rem; /* Space to the right of input */
+  font-size: 1rem; /* Standard input text size */
+}
+.newsletter button {
+  padding: 0.7rem 1.5rem; /* Space inside button */
+  border: none; /* Removes default border */
+  border-radius: 20px; /* Rounded button corners */
+  background: #ff7043; /* Orange background for button */
+  color: #fff; /* White button text */
+  font-size: 1rem; /* Standard button text size */
+  font-weight: bold; /* Bold button text */
+  cursor: pointer; /* Shows pointer cursor on hover */
+  transition: background 0.2s; /* Smooth background color transition on hover */
+}
+.newsletter button:hover {
+  background: #d84315; /* Darker orange on hover */
+}
+
+/* Newsletter message styles */
+.message {
+  margin-top: 1rem; /* Space above the message */
+  padding: 0.8rem; /* Space inside the message box */
+  border-radius: 8px; /* Rounded corners for message box */
+  font-weight: 500; /* Medium bold text */
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.3s ease; /* Smooth fade in/out */
+}
+.message.success {
+  background: #d4edda; /* Light green background for success */
+  color: #155724; /* Dark green text for success */
+  border: 1px solid #c3e6cb; /* Green border for success */
+  opacity: 1; /* Show message */
+}
+.message.error {
+  background: #f8d7da; /* Light red background for error */
+  color: #721c24; /* Dark red text for error */
+  border: 1px solid #f5c6cb; /* Red border for error */
+  opacity: 1; /* Show message */
+}
+.message.info {
+  background: #d1ecf1; /* Light blue background for info */
+  color: #0c5460; /* Dark blue text for info */
+  border: 1px solid #bee5eb; /* Blue border for info */
+  opacity: 1; /* Show message */
+}
+footer {
+  text-align: center; /* Centers footer text */
+  padding: 1.5rem 0; /* Space above and below footer */
+  background: #ff7043; /* Orange background for footer */
+  color: #fff; /* White footer text */
+  margin-top: 2rem; /* Space above the footer */
+}
+@media (max-width: 900px) {
+  .recipes {
+    flex-direction: column; /* Stacks recipe cards vertically on small screens */
+    align-items: center; /* Centers recipe cards on small screens */
+  }
+}
+.cooking-tips {
+  margin: 3rem auto;
+  max-width: 900px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  padding: 2rem 1rem 2.5rem 1rem;
+}
+.tips-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+.tip {
+  flex: 1 1 320px;
+  min-width: 280px;
+  max-width: 400px;
+  background: #fff8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  padding: 1.5rem 1rem;
+  margin: 0 auto;
+}
+.tip h3 {
+  color: #ff7043;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+.tip ol {
+  padding-left: 1.2rem;
+  text-align: left;
+}
+.tip li {
+  margin-bottom: 0.7rem;
+  line-height: 1.5;
+} 

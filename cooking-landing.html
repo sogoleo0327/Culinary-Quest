@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<!--
+  This line tells the browser that this file is an HTML5 document.
+  It's always the very first line in an HTML file.
+-->
+<html lang="en">
+<!--
+  The <html> tag wraps ALL the content on your web page.
+  The 'lang="en"' part means the language is English.
+-->
+<head>
+  <!--
+    The <head> section contains information about your web page (not shown on the page itself).
+    This info helps browsers and search engines understand your site.
+  -->
+  <meta charset="UTF-8">
+  <!--
+    This <meta> tag sets the character encoding to UTF-8, which means your page can show most characters and symbols from all languages.
+  -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    This <meta> tag makes your website look good on phones and tablets by controlling the page's width and scaling.
+  -->
+  <title>Culinary Quest - Cooking Made Simple</title>
+  <!--
+    The <title> tag sets the text that appears in the browser tab for your page.
+  -->
+  <link rel="stylesheet" href="style.css">
+  <!--
+    This <link> tag connects your HTML to a separate CSS file (style.css) that controls how your page looks (colors, layout, fonts, etc).
+  -->
+  <script src="script.js" defer></script>
+  <!--
+    This <script> tag connects your HTML to a separate JavaScript file (script.js) that handles interactive functionality.
+    The 'defer' attribute ensures the script loads after the HTML is parsed.
+  -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <!--
+    EmailJS library for sending emails from frontend JavaScript.
+    This allows us to send welcome emails when users subscribe to the newsletter.
+  -->
+</head>
+<body class="preload">
+  <style>
+    /* --- Header Controls & Socials --- */
+    .top-left-controls {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 1001;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      align-items: center;
+    }
+    .social-links {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      z-index: 1001;
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-icon {
+      transition: transform 0.2s ease-in-out;
+    }
+    .social-icon:hover {
+      transform: scale(1.15);
+      animation: social-jiggle 0.4s;
+    }
+    .social-icon svg {
+      width: 36px;
+      height: 36px;
+    }
+    /* Making the Instagram icon slightly smaller */
+    .instagram-link svg {
+      width: 32px;
+      height: 32px;
+    }
+    .youtube-link .youtube-bg { fill: #FF0000; }
+    .youtube-link .youtube-play { fill: #FFFFFF; }
+    .instagram-link .instagram-bg { fill: url(#ig-grad); }
+    .instagram-link .instagram-fg { fill: #fff; }
+
+    @keyframes social-jiggle {
+      0%, 100% { transform: rotate(0) scale(1.15); }
+      25% { transform: rotate(-8deg) scale(1.15); }
+      75% { transform: rotate(8deg) scale(1.15); }
+    }
+    .dark-mode-btn {
+      z-index: 1000;
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.3rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .dark-mode-btn:hover {
+      animation: shake 0.3s;
+      background: #444;
+      color: #ff7043;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-4px); }
+      40% { transform: translateX(4px); }
+      60% { transform: translateX(-3px); }
+      80% { transform: translateX(3px); }
+      100% { transform: translateX(0); }
+    }
+    body.dark-mode {
+      background: #181818;
+      color: #f3f3f3;
+    }
+    body.dark-mode header,
+    body.dark-mode main,
+    body.dark-mode footer,
+    body.dark-mode section,
+    body.dark-mode .recipes,
+    body.dark-mode .tip,
+    body.dark-mode .cooking-tips-page {
+      background: #232323 !important;
+      color: #f3f3f3 !important;
+    }
+    body.dark-mode .browse-btn,
+    body.dark-mode .scroll-btn {
+      background: #444 !important;
+      color: #ff7043 !important;
+    }
+    body.dark-mode .browse-btn:hover,
+    body.dark-mode .scroll-btn:hover {
+      background: #ff7043 !important;
+      color: #fff !important;
+    }
+    body.dark-mode .recipe-card {
+      background-color: #3a3a3a; /* A dark background for the cards */
+      /* The text inside the card will inherit the color below */
+      color: #f0f0f0; /* A light text color for readability */
+    }
+    .recipe-card {
+      position: relative; /* For the shimmer effect */
+      overflow: hidden; /* Hides the shimmer outside the card */
+      /* Updated transition for smooth 3D tilt reset */
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s ease;
+    }
+    .recipe-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    /* --- Recipe Card Spotlight --- */
+    .recipe-card::before {
+      content: '';
+      position: absolute;
+      left: var(--x, 50%); /* Default to center */
+      top: var(--y, 50%);  /* Default to center */
+      transform: translate(-50%, -50%);
+      width: 250px; /* Size of the spotlight */
+      height: 250px;
+      background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none; /* So it doesn't block clicks */
+    }
+    .recipe-card:hover::before {
+      opacity: 1;
+    }
+    body.dark-mode .recipe-card::before {
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+    }
+    .surprise-btn {
+      background: #ff7043;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.3rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+      position: relative;
+    }
+    .surprise-btn:hover {
+      background: #f7c67a; /* Lighter golden-yellow */
+      color: #222;
+      animation: chefkiss 0.4s;
+    }
+    @keyframes chefkiss {
+      0% { transform: scale(1) rotate(0deg); }
+      20% { transform: scale(1.1) rotate(-5deg); }
+      40% { transform: scale(1.15) rotate(5deg); }
+      60% { transform: scale(1.1) rotate(-3deg); }
+      80% { transform: scale(1.05) rotate(3deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* --- Raining Food Surprise --- */
+    .food-particle {
+      position: fixed;
+      top: -50px; /* Start above the screen */
+      pointer-events: none;
+      z-index: 10000;
+      font-size: 2rem; /* Base size, will be randomized in JS */
+      opacity: 0;
+      /* Animation properties will be randomized in JS */
+      animation: food-fall linear forwards;
+    }
+
+    @keyframes food-fall {
+      0% {
+        transform: translateY(0vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        /* Fall to just below the viewport while rotating */
+        transform: translateY(110vh) rotate(var(--r-end));
+        opacity: 1; /* Stays visible until it's off-screen */
+      }
+    }
+    .something-btn {
+      background: #eee;
+      color: #222;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.3rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .something-btn:hover {
+      background: #ff7043;
+      color: #fff;
+      animation: shake 0.3s;
+    }
+
+    /* --- Hero Search Bar --- */
+    .hero-search-container {
+      /* Centered within the header */
+      margin: 1rem auto 1rem;
+      width: 90%; /* Make it responsive within the hero section */
+      max-width: 600px;
+      padding: 0 1rem;
+      z-index: 10;
+    }
+    #foodSearchForm {
+      display: flex;
+      width: 100%;
+      border-radius: 100px; /* Fully rounded */
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Softer shadow */
+      border: 1px solid #eee;
+    }
+    #foodSearchInput {
+      flex-grow: 1;
+      border: none;
+      background: transparent;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      outline: none;
+      color: #555;
+    }
+    #foodSearchForm button {
+      border: none;
+      background: #ff7043;
+      color: white;
+      font-size: 1.2rem;
+      padding: 0 1.5rem;
+      border-radius: 0 100px 100px 0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #foodSearchForm button:hover {
+      background: #e65a2f;
+    }
+    body.dark-mode #foodSearchForm {
+      background: #3a3a3a;
+      border-color: #444;
+    }
+    body.dark-mode #foodSearchInput {
+      color: #f0f0f0;
+    }
+    body.dark-mode #foodSearchInput::placeholder {
+      color: #888;
+    }
+
+    /* --- Search Results Modal --- */
+    .search-modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 10001;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+      animation: modal-fade-in 0.3s ease;
+    }
+    .search-modal-content {
+      /* Now positioned by JavaScript */
+      position: absolute;
+      background-color: #fefefe;
+      padding: 25px 35px;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: modal-content-pop-in 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .search-modal-close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .search-modal-close:hover,
+    .search-modal-close:focus {
+      color: black;
+    }
+    #searchResultsContent h3 {
+      margin-top: 0;
+      color: #ff7043;
+      font-size: 1.8rem;
+    }
+    body.dark-mode .search-modal-content {
+      background-color: #2c2c2c;
+      border-color: #555;
+      color: #f0f0f0;
+    }
+    body.dark-mode .search-modal-close {
+      color: #888;
+    }
+    body.dark-mode .search-modal-close:hover,
+    body.dark-mode .search-modal-close:focus {
+      color: #fff;
+    }
+    @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modal-content-pop-in {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* --- New Surprise: Cyberpunk Tooltip for Products Button --- */
+    .products-btn-container {
+      position: relative; /* For tooltip positioning */
+    }
+    .something-btn::after {
+      /* Styles removed */
+    }
+    .something-btn { text-decoration: none; }
+
+
+    .hero-video {
+      width: 95%;
+      height: 15rem;
+      max-width: 1200px; /* Prevents the video from becoming too large on wide screens */
+      display: block; /* Needed to allow for margin auto centering */
+      margin: 2rem auto; /* Adds some space above/below and centers it horizontally */
+      border-radius: 15px; /* Softens the corners */
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Adds a subtle shadow for depth */
+      object-fit: cover; /* Ensures the video covers the area without distortion */
+    }
+    .scroll-to-top-btn {
+      display: none; /* Hidden by default */
+      position: fixed;
+      bottom: 20px;
+      right: 30px;
+      z-index: 99;
+      border: none;
+      background-color: #26a69a; /* New teal color */
+      color: white;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 24px;
+      width: 50px;
+      height: 50px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: background-color 0.3s;
+    }
+    .scroll-to-top-btn:hover {
+      background-color: #00897b; /* Darker teal on hover */
+    }
+    body.dark-mode .scroll-to-top-btn {
+      background-color: #444;
+      color: #26a69a; /* New teal color for dark mode */
+    }
+
+    /* --- Blast Wave Activation --- */
+    .blast-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background-color: #181818;
+      z-index: 9999;
+      pointer-events: none;
+      animation: fade-out-background 5.0s forwards ease-out;
+    }
+    .blast-container::before {
+      content: 'Culinary Quest';
+      font-family: 'Courier New', Courier, monospace; /* A futuristic font */
+      font-size: 3.5rem; /* Adjusted for the longer name */
+      font-weight: bold;
+      white-space: nowrap; /* Prevents the name from wrapping */
+      color: #ff7043;
+      text-shadow: 0 0 10px #ff7043, 0 0 20px #26a69a;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      animation: logo-pulse 5.0s forwards cubic-bezier(0.5, 0, 0.5, 1);
+    }
+    .blast-container::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      box-shadow: 0 0 60px 30px rgba(255, 112, 67, 0.7), 0 0 120px 60px rgba(38, 166, 154, 0.5);
+      animation: blast-ring 3.5s forwards cubic-bezier(0.2, 1, 0.8, 1);
+    }
+
+    @keyframes fade-out-background {
+      0% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
+    }
+
+    @keyframes logo-pulse {
+      0%, 50%, 95%, 100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      65% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.1);
+      }
+      80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes blast-ring {
+      from { width: 0; height: 0; opacity: 1; }
+      to { width: 250vmax; height: 250vmax; opacity: 0; }
+    }
+    /* --- "Supernova" Animation --- */
+
+    /* Keyframe for title letters to ignite like a supernova */
+    @keyframes supernovaIgnition {
+        from {
+            opacity: 0;
+            transform: scale(0.2) rotateZ(-15deg);
+            filter: brightness(5);
+            text-shadow: 0 0 20px #ff7043, 0 0 40px #ff7043, 0 0 60px #26a69a;
+        }
+        70% {
+            opacity: 1;
+            transform: scale(1.1);
+            filter: brightness(1.5);
+            text-shadow: 0 0 5px #ff7043, 0 0 10px #26a69a;
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0) rotateZ(0deg);
+            filter: brightness(1);
+            text-shadow: none;
+        }
+    }
+
+    /* Keyframe for content sections to appear with a shockwave */
+    @keyframes energyShockwave {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+            clip-path: circle(0% at 50% 50%);
+            filter: brightness(3);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+            clip-path: circle(75% at 50% 50%);
+            filter: brightness(1);
+        }
+    }
+
+    header h1 span {
+        display: inline-block;
+        opacity: 0; /* Start hidden */
+        animation: supernovaIgnition 1.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    header p, .hero-video, .hero-search-container, #recipes .section-title, .recipe-card, .about, .newsletter, footer {
+        opacity: 0; /* Start hidden */
+        animation: energyShockwave 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    /* Staggered delays synchronized with the blast wave */
+    header h1 span { animation-delay: calc(4.0s + var(--char-index) * 0.05s); }
+    header p { animation-delay: 4.2s; }
+    .hero-search-container { animation-delay: 4.3s; }
+    .hero-video { animation-delay: 4.35s; } /* This animates the video container */
+    #recipes .section-title { animation-delay: 4.4s; }
+    .recipe-card:nth-of-type(1) { animation-delay: 4.5s; }
+    .recipe-card:nth-of-type(2) { animation-delay: 4.55s; }
+    .recipe-card:nth-of-type(3) { animation-delay: 4.6s; }
+    .recipe-card:nth-of-type(4) { animation-delay: 4.65s; }
+    .recipe-card:nth-of-type(5) { animation-delay: 4.7s; }
+    .recipe-card:nth-of-type(6) { animation-delay: 4.75s; }
+    .about { animation-delay: 4.8s; }
+    .newsletter { animation-delay: 4.85s; }
+    footer { animation-delay: 4.9s; }
+
+    /* --- Surprise: Cyberpunk Glitch Trail --- */
+    .particle {
+      position: fixed;
+      left: 0;
+      top: 0;
+      /* Square, glitch-like particles */
+      background: var(--c); /* Color will be set by JS */
+      border-radius: 0; /* Makes it a square */
+      pointer-events: none;
+      z-index: 9999;
+      animation: particle-fly 1s linear forwards; /* Faster, more direct animation */
+      box-shadow: 0 0 8px var(--c), 0 0 12px var(--c);
+    }
+
+    @keyframes particle-fly {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        /* More erratic, linear path */
+        transform: translate(var(--x), var(--y)) rotate(var(--r));
+        opacity: 0;
+      }
+    }
+
+    /* --- Newsletter Button Loading State --- */
+    .newsletter button {
+      position: relative; /* Needed for spinner positioning */
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .newsletter button.loading {
+      cursor: wait;
+      color: transparent !important; /* Hide text */
+      background-color: #26a69a !important; /* Keep color consistent */
+      pointer-events: none; /* Prevent multiple clicks */
+    }
+    .newsletter button.loading::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-top: -10px;
+      margin-left: -10px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: button-loading-spinner 0.8s linear infinite;
+    }
+    @keyframes button-loading-spinner {
+      to { transform: rotate(360deg); }
+    }
+
+    /* --- Jumpscare Body Glitch --- */
+    body.glitching {
+      /* Apply both glitch and shake to the entire page for a chaotic effect */
+      animation: page-glitch 2.5s linear 1,
+                 screen-shake 0.1s 25;
+    }
+
+    /* --- Jumpscare Visual Effects --- */
+    @keyframes page-glitch {
+      0%, 100% { transform: translate(0); clip-path: inset(0); filter: none; }
+      5% { transform: translate(10px, -5px) skewX(10deg); clip-path: inset(10% 20% 70% 5%); filter: hue-rotate(60deg) saturate(15); }
+      10% { transform: translate(-10px, 5px) skewX(-10deg); clip-path: inset(80% 5% 5% 10%); filter: invert(1); }
+      15% { transform: translate(0); clip-path: inset(0); filter: none; }
+      20% { clip-path: inset(40% 50% 30% 20%); filter: sepia(1); }
+      25% { transform: translate(15px, -10px) skewY(15deg); clip-path: inset(0); filter: hue-rotate(120deg); }
+      30% { transform: translate(-15px, 10px) skewY(-15deg); clip-path: inset(70% 10% 10% 5%); filter: invert(1); }
+      35% { transform: translate(0); clip-path: inset(0); filter: none; }
+      40% { clip-path: inset(20% 10% 60% 5%); filter: saturate(25) contrast(3); }
+      45% { transform: translate(20px, -15px) skewX(20deg); clip-path: inset(0); filter: invert(1); }
+      50% { transform: translate(0); clip-path: inset(0); filter: none; }
+      55% { clip-path: inset(60% 5% 20% 10%); filter: hue-rotate(240deg); }
+      60% { transform: translate(-20px, 15px) skewX(-20deg); clip-path: inset(0); filter: invert(1); }
+      65% { clip-path: inset(30% 40% 40% 30%); filter: sepia(1) brightness(0.5); }
+      70% { transform: translate(0); clip-path: inset(0); filter: none; }
+      75% { clip-path: inset(10% 5% 80% 20%); filter: hue-rotate(300deg); }
+      80% { transform: translate(25px, -20px) skewY(25deg); clip-path: inset(0); filter: invert(1); }
+      85% { transform: translate(-25px, 20px) skewY(-25deg); clip-path: inset(85% 10% 2% 5%); filter: none; }
+      90% { clip-path: inset(5% 15% 75% 10%); filter: saturate(30) contrast(4); }
+      95% { transform: translate(0); clip-path: inset(0); filter: invert(1); }
+    }
+    @keyframes screen-shake {
+      0%, 100% { transform: translate(0, 0); } 10%, 30%, 50%, 70%, 90% { transform: translate(-8px, 6px); } 20%, 40%, 60%, 80% { transform: translate(8px, -6px); }
+    }
+
+    /* --- Konami Code Easter Egg: Haunted Toast Jumpscare --- */
+    .jumpscare-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;      background: radial-gradient(circle at center, rgba(100, 0, 0, 0.3), rgba(0, 0, 0, 0.95) 70%); /* Oppressive red-black overlay */
+      z-index: 99999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+      opacity: 0;
+      /* Flash in AFTER a delay (during the glitch), then fade out. NO SHAKE. */
+      animation: jumpscare-flash-in 0.1s 1s forwards,
+                 jumpscare-fade-out 0.5s 4.0s forwards;
+    }
+    .jumpscare-image {
+      /* The Haunted Toast */
+      width: 300px;
+      height: 350px;
+      /* Grotesque, moldy texture */
+      background-color: #6d4c3c;
+      background-image: radial-gradient(circle at 80% 20%, #5a6a2b 10%, transparent 40%), radial-gradient(circle at 30% 70%, #354b0f 5%, transparent 30%), linear-gradient(to top, rgba(0,0,0,0.7), transparent 50%), radial-gradient(circle at 50% 50%, rgba(0,0,0,0.3), transparent 30%);
+      border: 20px solid #3d2b1f; /* Burnt crust */
+      border-radius: 40px 40px 20px 20px;
+      position: relative;
+      box-shadow: 0 0 80px rgba(255, 0, 0, 0.8), inset 0 0 30px #000;
+      transform: scale(0.3);
+      opacity: 0;
+      /* Pop in fast and hold steady, also delayed to appear mid-glitch */
+      animation: jumpscare-image-pop 0.1s 1s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .jumpscare-mouth {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 160px; /* Slightly wider mouth */
+      height: 120px;
+      background: #000; /* A pure black void */
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%; /* A screaming oval */
+      box-shadow: inset 0 0 15px #000;
+    }
+    /* The glowing red eyes */
+    .jumpscare-image::before,
+    .jumpscare-image::after {
+      content: '';
+      position: absolute;
+      width: 12px; /* Even smaller, more menacing eyes */
+      height: 12px;
+      background-color: #ff0000;
+      border-radius: 50%;
+      top: 120px;
+      /* More intense, "bleeding" shadow effect */
+      box-shadow: 0 0 50px #ff0000, 0 0 70px #ff0000, inset 0 0 3px #fff, inset 0 0 8px #ff4d4d, 0 5px 20px rgba(255,0,0,0.7);
+      animation: eye-flicker 1.5s infinite;
+    }
+    .jumpscare-image::before { left: 60px; transform: rotate(-10deg); }
+    .jumpscare-image::after { right: 60px; transform: rotate(10deg); }
+    @keyframes jumpscare-flash-in { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes jumpscare-fade-out { to { opacity: 0; } }
+    @keyframes jumpscare-image-pop {
+      from { transform: scale(0.1) rotate(45deg); opacity: 0; }
+      to { transform: scale(1.8) rotate(0deg); opacity: 1; } /* Pop and hold steady */
+    }
+    @keyframes eye-flicker {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.7; } 75% { opacity: 1; }
+      77% { opacity: 0; } /* Quick blink */ 80% { opacity: 1; }
+    }
+    /* --- Toast Notification (Styled as a slice of toast) --- */
+    .toast-notification {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      /* More realistic toast texture */
+      background-color: #f0e2b6; /* Base bread color */
+      background-image:
+        radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%), /* Toasted center */
+        linear-gradient(145deg, #f3d9a2, #e6c37f); /* Base gradient */
+      /* Darker, more realistic crust */
+      border: 8px solid #8c5811;
+      /* Dark brown text that looks 'branded' on */
+      color: #4a2500;
+      text-shadow: 1px 1px 1px rgba(240, 226, 182, 0.7);
+      /* Rounded top corners like a slice of bread */
+      border-radius: 20px 20px 12px 12px;
+      padding: 12px 20px;
+      /* Outer shadow for lift, inner shadow for crust depth */
+      box-shadow:
+        0 8px 20px rgba(92, 44, 6, 0.3),
+        inset 0 0 15px rgba(140, 88, 17, 0.5);
+      z-index: 1002;
+      font-size: 1.1rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: toast-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+                 toast-out 0.5s cubic-bezier(0.55, 0.085, 0.68, 0.53) 3.5s forwards;
+    }
+
+    @keyframes toast-in {
+      from { transform: translate(-50%, 100px); opacity: 0; }
+      to { transform: translate(-50%, 0); opacity: 1; }
+    }
+
+    @keyframes toast-out {
+      from { transform: translate(-50%, 0); opacity: 1; }
+      to { transform: translate(-50%, 100px); opacity: 0; }
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const btn = document.getElementById('darkModeToggle');
+      function setDarkMode(on) {
+        document.body.classList.toggle('dark-mode', on);
+        btn.textContent = on ? 'Light' : 'Dark';
+      }
+      // Set initial button text and state based on the body's class
+      setDarkMode(document.body.classList.contains('dark-mode'));
+
+      btn.onclick = function() {
+        setDarkMode(!document.body.classList.contains('dark-mode'));
+      };
+
+      // --- Page Load Animation ---
+      // Create and animate the blast wave overlay
+      const blastOverlay = document.createElement('div');
+      blastOverlay.className = 'blast-container';
+
+      const logoContainer = document.createElement('div');
+      logoContainer.className = 'intro-logo';
+      logoContainer.innerHTML = `<div class="intro-logo-text">Culinary Quest</div>`;
+      blastOverlay.appendChild(logoContainer);
+
+      document.body.appendChild(blastOverlay);
+
+      // Remove the overlay after the animation to clean up the DOM
+      setTimeout(() => {
+        blastOverlay.remove();
+      }, 5100); // A bit longer than the animation duration
+
+      const title = document.querySelector('header h1');
+      if (title) {
+        const originalText = title.textContent;
+        title.innerHTML = ''; // Clear original text
+
+        originalText.split('').forEach((char, index) => {
+          const span = document.createElement('span');
+          span.textContent = char;
+          if (char.trim() === '') {
+            span.innerHTML = '&nbsp;'; // Handle spaces
+          }
+          span.style.setProperty('--char-index', index);
+          title.appendChild(span);
+        });
+      }
+
+      // --- Custom Toast Notification ---
+      function showToast(message) {
+        // Remove any existing toasts to prevent stacking
+        const existingToast = document.querySelector('.toast-notification');
+        if (existingToast) {
+          existingToast.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.innerHTML = message; // Use innerHTML to render emojis
+
+        document.body.appendChild(toast);
+
+        // Remove the toast from the DOM after its animation is done (4s total lifetime)
+        setTimeout(() => {
+          toast.remove();
+        }, 4000);
+      }
+
+      // Surprise button
+      const surpriseBtn = document.getElementById('chefSurpriseBtn');
+      if (surpriseBtn) {
+        surpriseBtn.onclick = function() {
+          // Show the original toast notification
+          showToast("Mwah! A Chef's Kiss! 😘👨‍🍳");
+
+          // --- Raining Food Surprise ---
+          const foodEmojis = ['🥕', '🍅', '🥦', '🍕', '🍔', '🍓', '🥑', '🌽', '🌶️', '🧀', '🍳'];
+          const particleCount = 30; // How many food items to drop
+
+          for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'food-particle';
+            document.body.appendChild(particle);
+
+            // Pick a random food emoji
+            particle.textContent = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+
+            // Randomize properties for a more dynamic effect
+            const startX = Math.random() * 100; // Starting horizontal position in vw
+            const size = Math.random() * 1.5 + 1; // Font size from 1rem to 2.5rem
+            const rotation = Math.random() * 720 - 360; // Random rotation
+            const duration = Math.random() * 2 + 3; // Animation duration 3s to 5s
+            const delay = Math.random() * 2; // Animation delay 0s to 2s
+
+            particle.style.left = `${startX}vw`;
+            particle.style.fontSize = `${size}rem`;
+            particle.style.setProperty('--r-end', `${rotation}deg`);
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+
+            // Remove particle after animation
+            setTimeout(() => {
+              particle.remove();
+            }, (duration + delay) * 1000);
+          }
+        };
+      }
+
+      // --- Food Search Functionality ---
+      const foodData = {
+        'pizza': {
+          title: '🍕 Pizza',
+          info: 'A dish of Italian origin consisting of a usually round, flat base of leavened wheat-based dough topped with tomatoes, cheese, and often various other ingredients (such as anchovies, mushrooms, onions, olives, pineapple, meat, etc.), which is then baked at a high temperature, traditionally in a wood-fired oven.'
+        },
+        'sushi': {
+          title: '🍣 Sushi',
+          info: 'A Japanese dish of prepared vinegared rice, usually with some sugar and salt, accompanying a variety of ingredients, such as seafood, often raw, and vegetables. Styles of sushi and its presentation vary widely, but the one key ingredient is "sushi rice".'
+        },
+        'taco': {
+          title: '🌮 Taco',
+          info: 'A traditional Mexican dish consisting of a small hand-sized corn or wheat tortilla topped with a filling. The tortilla is then folded around the filling and eaten by hand. A taco can be made with a variety of fillings, including beef, pork, chicken, seafood, beans, vegetables, and cheese.'
+        },
+        'burger': {
+          title: '🍔 Burger',
+          info: 'A sandwich consisting of one or more cooked patties of ground meat, usually beef, placed inside a sliced bread roll or bun. The patty may be pan-fried, grilled, smoked or flame-broiled. Burgers are often served with cheese, lettuce, tomato, onion, pickles, bacon, or chilis.'
+        },
+        'salad': {
+          title: '🥗 Salad',
+          info: 'A dish consisting of a mixture of small pieces of food, usually vegetables or fruit. However, different varieties of salad may contain virtually any type of ready-to-eat food. Salads are typically served at room temperature or chilled, with notable exceptions such as south German potato salad which can be served warm.'
+        },
+        'pasta': {
+          title: '🍝 Pasta',
+          info: 'A type of food typically made from an unleavened dough of wheat flour mixed with water or eggs, and formed into sheets or various shapes, then cooked by boiling or baking. It is a staple food of traditional Italian cuisine.'
+        },
+        'cake': {
+          title: '🍰 Cake',
+          info: 'A form of sweet food made from flour, sugar, and other ingredients, that is usually baked. In their oldest forms, cakes were modifications of bread, but cakes now cover a wide range of preparations that can be simple or elaborate.'
+        },
+        'chicken': {
+          title: '🍗 Chicken',
+          info: 'A type of domesticated fowl, a subspecies of the red junglefowl. It is one of the most common and widespread domestic animals, with a total population of more than 19 billion as of 2011. Humans keep chickens primarily as a source of food (consuming both their meat and eggs).'
+        },
+        'steak': {
+            title: '🥩 Steak',
+            info: 'A meat generally sliced across the muscle fibers, potentially including a bone. It is normally grilled, but can be pan-fried. It is often grilled in an attempt to replicate the flavor of steak cooked over the glowing coals of an open fire.'
+        },
+        'pancakes': {
+            title: '🥞 Pancakes',
+            info: 'A flat cake, often thin and round, prepared from a starch-based batter that may contain eggs, milk and butter and cooked on a hot surface such as a griddle or frying pan, often frying with oil or butter. Often served with syrup, fruit, or whipped cream.'
+        },
+        'bacon': {
+            title: '🥓 Bacon',
+            info: 'A type of salt-cured pork. Bacon is prepared from several different cuts of meat, typically from the pork belly or from the less fatty back cuts. It is eaten on its own, as a side dish, or used as a minor ingredient to flavour dishes.'
+        },
+        'eggs': {
+            title: '🍳 Eggs',
+            info: 'Laid by female animals of many different species, including birds, reptiles, amphibians, a few mammals, and fish. Bird and reptile eggs consist of a protective eggshell, albumen (egg white), and vitellus (egg yolk), contained within various thin membranes. They are a common breakfast food.'
+        },
+        'bread': {
+            title: '🍞 Bread',
+            info: 'A staple food prepared from a dough of flour and water, usually by baking. Throughout recorded history it has been a prominent food in large parts of the world and is one of the oldest man-made foods, having been of significant importance since the dawn of agriculture.'
+        },
+        'cheese': {
+            title: '🧀 Cheese',
+            info: 'A dairy product derived from milk that is produced in a wide range of flavors, textures, and forms by coagulation of the milk protein casein. It comprises proteins and fat from milk, usually the milk of cows, buffalo, goats, or sheep.'
+        },
+        'ice cream': {
+            title: '🍦 Ice Cream',
+            info: 'A sweetened frozen food typically eaten as a snack or dessert. It may be made from dairy milk or cream and is flavoured with a sweetener, either sugar or an alternative, and any of a variety of spices, such as cocoa or vanilla, or with fruit such as strawberries or peaches.'
+        },
+        'donut': {
+            title: '🍩 Donut',
+            info: 'A type of fried dough confection or dessert food. The donut is popular in many countries and is prepared in various forms as a sweet snack that can be homemade or purchased in bakeries, supermarkets, food stalls, and franchised specialty vendors.'
+        },
+        'cookie': {
+            title: '🍪 Cookie',
+            info: 'A baked or cooked food that is typically small, flat and sweet. It usually contains flour, sugar and some type of oil or fat. It may include other ingredients such as raisins, oats, chocolate chips, nuts, etc.'
+        },
+        'fries': {
+            title: '🍟 Fries',
+            info: 'Also known as French fries, are batonnet or allumette-cut deep-fried potatoes. In the United States and most of Canada, the term fries refers to all dishes of fried elongated pieces of potatoes, while in the United Kingdom, thinly cut fried potatoes are sometimes called shoestring fries to distinguish them from the thicker-cut chips.'
+        },
+        'hot dog': {
+            title: '🌭 Hot Dog',
+            info: 'A cooked sausage, traditionally grilled or steamed and served in a sliced bun as a sandwich. Hot dog variants include the corn dog and pigs in a blanket. Typical hot dog garnishes include mustard, ketchup, onions, mayonnaise, relish, coleslaw, cheese, chili, olives, and sauerkraut.'
+        },
+        'soup': {
+            title: '🍲 Soup',
+            info: 'A primarily liquid food, generally served warm or hot (but may be cool or cold), that is made by combining ingredients of meat or vegetables with stock, or water. Hot soups are additionally characterized by boiling solid ingredients in liquids in a pot until the flavors are extracted, forming a broth.'
+        },
+        'kimchi': {
+            title: '🥬 Kimchi',
+            info: 'A staple in Korean cuisine, kimchi is a traditional side dish of salted and fermented vegetables, such as napa cabbage and Korean radish, made with a widely varying selection of seasonings including gochugaru (chili powder), scallions, garlic, and ginger.'
+        },
+        'bibimbap': {
+            title: '🍚 Bibimbap',
+            info: 'Meaning "mixed rice", bibimbap is served as a bowl of warm white rice topped with sautéed and seasoned vegetables, gochujang (chili pepper paste), and often a fried egg and sliced meat. You mix it all together before eating!'
+        },
+        'bulgogi': {
+            title: '🍖 Bulgogi',
+            info: 'Literally "fire meat", bulgogi is made of thin, marinated slices of beef or pork grilled on a barbecue. The marinade is typically a sweet and savory mixture of soy sauce, sugar, sesame oil, garlic, and pepper.'
+        },
+        'tteokbokki': {
+            title: '🌶️ Tteokbokki',
+            info: 'A popular Korean street food made from chewy, cylinder-shaped rice cakes stir-fried in a spicy and sweet gochujang-based sauce, often with fish cakes and boiled eggs.'
+        },
+        'korean fried chicken': {
+            title: '🍗 Korean Fried Chicken',
+            info: 'Known for its extra crispy skin, this variety of fried chicken is often double-fried and coated in a sweet and spicy sauce (yangnyeom) or served plain (huraideu). A popular late-night snack!'
+        }
+      };
+
+      const searchForm = document.getElementById('foodSearchForm');
+      const searchInput = document.getElementById('foodSearchInput');
+      const modal = document.getElementById('searchResultsModal');
+      const modalContent = document.getElementById('searchResultsContent');
+      const closeModalBtn = document.querySelector('.search-modal-close');
+
+      searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) return;
+        
+        // --- New: Position the modal content near the search bar ---
+        const searchRect = searchForm.getBoundingClientRect();
+        const modalContentContainer = modal.querySelector('.search-modal-content');
+        modalContentContainer.style.top = `${searchRect.bottom + 10}px`; // 10px below
+        modalContentContainer.style.left = `${searchRect.left}px`;
+        modalContentContainer.style.width = `${searchRect.width}px`;
+        modalContentContainer.style.margin = '0'; // Override centering
+
+        const result = foodData[query];
+
+        if (result) {
+          modalContent.innerHTML = `<h3>${result.title}</h3><p>${result.info}</p>`;
+        } else {
+          modalContent.innerHTML = `<h3>😢 Not Found</h3><p>Sorry, we don't have info for "${searchInput.value}" yet. Try "pizza", "sushi", or "cake"!</p>`;
+        }
+
+        modal.style.display = 'block';
+        searchInput.value = ''; // Clear the search bar
+      });
+
+      // Close the modal
+      closeModalBtn.onclick = function() { modal.style.display = 'none'; }
+      window.onclick = function(event) { if (event.target == modal) { modal.style.display = 'none'; } }
+
+      // Back to Top Button
+      const backToTopBtn = document.getElementById('backToTopBtn');
+      window.onscroll = function() {
+        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+          backToTopBtn.style.display = "block";
+        } else {
+          backToTopBtn.style.display = "none";
+        }
+      };
+      backToTopBtn.onclick = function() {
+        window.scrollTo({top: 0, behavior: 'smooth'});
+      };
+
+      // --- Newsletter Form with Loading State ---
+      const newsletterForm = document.getElementById('newsletterForm');
+      if (newsletterForm) {
+        const newsletterButton = newsletterForm.querySelector('button');
+        const emailInput = document.getElementById('emailInput');
+        const messageDiv = document.getElementById('message');
+
+        newsletterForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          if (!emailInput.value) return; // Don't submit if empty
+
+          // 1. Add loading state
+          newsletterButton.classList.add('loading');
+          newsletterButton.disabled = true;
+
+          // 2. Simulate API call (e.g., to EmailJS)
+          setTimeout(() => {
+            // 3. On success, remove loading state and show message
+            newsletterButton.classList.remove('loading');
+            newsletterButton.disabled = false;
+            messageDiv.textContent = 'Success! Welcome to the Quest!';
+            messageDiv.style.color = '#26a69a';
+            newsletterForm.reset();
+
+            // 4. Clear the message after a few seconds
+            setTimeout(() => {
+              messageDiv.textContent = '';
+            }, 5000);
+          }, 2500); // 2.5 second simulated delay
+        });
+      }
+
+      // --- Recipe Card Spotlight ---
+      const recipeCards = document.querySelectorAll('.recipe-card');
+      recipeCards.forEach(card => {
+        card.addEventListener('mousemove', e => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          card.style.setProperty('--x', `${x}px`);
+          card.style.setProperty('--y', `${y}px`);
+        });
+      });
+
+      // --- Surprise: Cyberpunk Glitch Trail ---
+      let particleThrottle = false;
+      document.addEventListener('mousemove', function(e) {
+        if (!particleThrottle) {
+          particleThrottle = true;
+          // Create particles frequently for a dense trail
+          setTimeout(() => { particleThrottle = false; }, 25);
+
+          const particle = document.createElement('div');
+          particle.className = 'particle';
+          document.body.appendChild(particle);
+
+          // Cyberpunk "glitch" particles
+          const size = Math.random() * 4 + 2; // smaller, sharper particles: 2px to 6px
+          const colors = ['#00f6ff', '#ff00ff', '#41ffca']; // Cyan, Magenta, Teal
+          const color = colors[Math.floor(Math.random() * colors.length)];
+
+          particle.style.setProperty('--c', color); // Set color via CSS variable
+          particle.style.width = `${size}px`;
+          particle.style.height = `${size}px`;
+          particle.style.left = `${e.clientX}px`;
+          particle.style.top = `${e.clientY}px`;
+
+          // Give it a random direction, distance, and lots of rotation
+          const endX = (Math.random() - 0.5) * 150;
+          const endY = (Math.random() - 0.5) * 150;
+          const rotation = (Math.random() - 0.5) * 720;
+          particle.style.setProperty('--x', `${endX}px`);
+          particle.style.setProperty('--y', `${endY}px`);
+          particle.style.setProperty('--r', `${rotation}deg`);
+
+          // Remove after animation (1s duration)
+          setTimeout(() => { particle.remove(); }, 1000);
+        }
+      });
+
+      // --- Konami Code Easter Egg ---
+      const konamiCode = ['arrowup', 'arrowup', 'arrowdown', 'arrowdown'];
+      let konamiIndex = 0;
+
+      function triggerJumpscare() {
+        // Prevent multiple scares from running at once
+        if (document.querySelector('.jumpscare-overlay')) {
+          return;
+        }
+
+        // 1. Start the virus glitch and page shake immediately.
+        document.body.classList.add('glitching');
+
+        // 2. Create and show the jumpscare overlay. Its animations are delayed in CSS to appear mid-glitch.
+        const overlay = document.createElement('div');
+        overlay.className = 'jumpscare-overlay';
+        const image = document.createElement('div');
+        image.className = 'jumpscare-image';
+        const mouth = document.createElement('div');
+        mouth.className = 'jumpscare-mouth';
+        image.appendChild(mouth);
+        overlay.appendChild(image);
+        document.body.appendChild(overlay);
+
+        // 3. Clean up the glitch/shake class after its animation is done
+        setTimeout(() => { document.body.classList.remove('glitching'); }, 2500); // Glitch animation is 2.5s
+
+        // 4. Clean up the overlay after all animations are complete
+        setTimeout(() => {
+          overlay.remove();
+        }, 4500); // Total duration
+      }
+
+      document.addEventListener('keydown', (e) => {
+        const requiredKey = konamiCode[konamiIndex];
+        // Check if the pressed key matches the expected key in the sequence
+        if (e.key.toLowerCase() === requiredKey) {
+          konamiIndex++; // Move to the next key in the sequence
+          // If the full sequence is entered
+          if (konamiIndex === konamiCode.length) {
+            triggerJumpscare();
+            konamiIndex = 0; // Reset for next time
+          }
+        } else {
+          // If the wrong key is pressed, reset the sequence.
+          konamiIndex = (e.key.toLowerCase() === konamiCode[0]) ? 1 : 0;
+        }
+      });
+    });
+  </script>
+
+  <div class="top-left-controls">
+    <button id="darkModeToggle" class="dark-mode-btn">Dark</button>
+    <button id="chefSurpriseBtn" class="surprise-btn">?</button>
+    <div class="products-btn-container">
+      <a href="products.html" class="something-btn">Products</a>
+    </div>
+  </div>
+
+  <div class="social-links">
+    <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" class="social-icon instagram-link" title="Visit us on Instagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><defs><radialGradient id="ig-grad" cx="0.3" cy="1.2" r="1.2"><stop offset="0" stop-color="#F58529"></stop><stop offset="0.4" stop-color="#DD2A7B"></stop><stop offset="0.9" stop-color="#8134AF"></stop></radialGradient></defs><path class="instagram-bg" d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.74 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.74 0 12s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.74 24 12 24s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.058-1.28.072-1.687.072-4.947s-.014-3.667-.072-4.947C23.728 2.69 21.308.272 16.947.072 15.667.014 15.26 0 12 0z"></path><path class="instagram-fg" d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"></path><circle class="instagram-fg" cx="18.406" cy="5.594" r="1.44"></circle></svg></a>
+    <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" class="social-icon youtube-link" title="Visit us on YouTube"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path class="youtube-bg" d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2A29 29 0 0 0 23 11.75a29 29 0 0 0-.46-5.33z"></path><polygon class="youtube-play" points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg></a>
+  </div>
+
+  <!--
+    HEADER SECTION
+    This is the top part of your page. It usually has your website's name and a short description or slogan.
+  -->
+  <header>
+    <h1>Culinary Quest</h1> <!-- <h1> is the biggest heading. Use it for your site or page name. Only one <h1> per page! -->
+    <p>Cooking Made Simple & Delicious</p> <!-- <p> means paragraph. Use it for normal text. -->
+    <div class="hero-search-container">
+      <form id="foodSearchForm">
+        <input type="search" id="foodSearchInput" placeholder="Search for food...">
+        <button type="submit">🔍</button>
+      </form>
+    </div>
+  </header>
+
+  <!--
+    HERO SECTION
+    This is a big, eye-catching area at the top of the page. It often has a background image, a headline, and a button or link.
+    It's meant to grab attention and tell visitors what your site is about.
+  -->
+  <section class="hero">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="Videos/IMG_6319.mp4" type="video/mp4">
+      <!-- Fallback text if video doesn't load -->
+      Your browser does not support the video tag.
+    </video>
+  </section>
+
+  <main>
+    <!--
+      MAIN CONTENT SECTION
+      The <main> tag holds the main content of your page (the important stuff).
+    -->
+
+    <!--
+      RECIPES SECTION
+      This part shows a list of featured recipes. Each recipe is in a "card" with a picture, title, and description.
+    -->
+    <section id="recipes">
+      <h2 class="section-title">Featured Recipes</h2>
+      <div class="recipes">
+        <!--
+          Each <div class="recipe-card"> is a single recipe card.
+          Inside each card:
+            - <img> shows a picture of the recipe. The src is the image file, alt is a description for screen readers.
+            - <h3> is a smaller heading for the recipe name.
+            - <p> is a short description of the recipe.
+        -->
+        <div class="recipe-card">
+          <a href="spaghetti-bolognese.html" style="text-decoration: none; color: inherit;">
+            <img src="Images/Spaghetti-Bolognese-Rezept4.jpg" alt="Spaghetti Bolognese">
+            <div class="card-content">
+              <h3>Spaghetti Bolognese</h3>
+              <p>A classic Italian pasta dish with rich, savory meat sauce.</p>
+            </div>
+          </a>
+        </div>
+        <div class="recipe-card">
+          <a href="avocado-toast.html" style="text-decoration: none; color: inherit;">
+            <img src="Images/avocado-toast-11.jpg" alt="Avocado Toast">
+            <div class="card-content">
+              <h3>Avocado Toast</h3>
+              <p>Simple, healthy, and delicious breakfast or snack option.</p>
+            </div>
+          </a>
+        </div>
+        <div class="recipe-card">
+          <a href="berry-pancakes.html" style="text-decoration: none; color: inherit;">
+            <img src="Images/stack-pancakes-blueberry-fresh-berry-67233933.webp" alt="Berry Pancakes">
+            <div class="card-content">
+              <h3>Berry Pancakes</h3>
+              <p>Fluffy pancakes loaded with fresh berries and a touch of honey.</p>
+            </div>
+          </a>
+        </div>
+        <div class="recipe-card">
+          <a href="grilled-salmon.html" style="text-decoration: none; color: inherit;">
+            <img src="Images/Grilled-Sockeye-salmon.jpg" alt="Grilled Salmon">
+            <div class="card-content">
+              <h3>Grilled Salmon</h3>
+              <p>Perfectly grilled salmon fillet with lemon and herbs for a healthy dinner.</p>
+            </div>
+          </a>
+        </div>
+        <div class="recipe-card">
+          <a href="chicken-caesar-salad.html" style="text-decoration: none; color: inherit;">
+            <img src="Images/grilled-chicken-caesar-salad-7-1000x1470.jpg" alt="Chicken Caesar Salad">
+            <div class="card-content">
+              <h3>Chicken Caesar Salad</h3>
+              <p>Crisp romaine, grilled chicken, parmesan, and homemade Caesar dressing.</p>
+            </div>
+          </a>
+        </div>
+        <div class="recipe-card">
+          <a href="vegetable-stir-fry.html" style="text-decoration: none; color: inherit;">
+            <img src="Images/th.jpg" alt="Vegetable Stir Fry">
+            <div class="card-content">
+              <h3>Vegetable Stir Fry</h3>
+              <p>Colorful veggies tossed in a savory sauce, served over steamed rice.</p>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!--
+      ABOUT SECTION
+      This part tells visitors what your website is about and your mission.
+    -->
+    <section class="about">
+      <h2 class="section-title">About Us</h2>
+      <p>At Culinary Quest, we believe cooking should be fun, easy, and accessible to everyone. Our mission is to inspire home cooks with simple recipes, helpful guides, and a passion for great food.</p>
+      <div style="text-align:center; margin: 1.5rem 0 0 0;">
+        <a href="cooking-tips.html" class="browse-btn" style="font-size:1.1rem;">🍳 Cooking Tips</a>
+      </div>
+    </section>
+
+    <!--
+      NEWSLETTER SECTION
+      This part lets users sign up for your newsletter by entering their email.
+      Now with working functionality!
+    -->
+    <section class="newsletter">
+      <h2 class="section-title">Join Our Newsletter</h2>
+      <p>Get the latest recipes and cooking tips delivered straight to your inbox!</p>
+      <form id="newsletterForm">
+        <!--
+          <form> is used to collect user input.
+          Here, it has:
+            - <input type="email">: a box where users type their email address.
+              - 'required' means the user can't submit the form if the box is empty.
+            - <button type="submit">: a button to send the form (now functional!).
+        -->
+        <input type="email" id="emailInput" placeholder="Your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
+      <div id="message" class="message"></div>
+    </section>
+  </main>
+
+  <!--
+    FOOTER SECTION
+    This is the bottom part of your page. It usually has copyright info or links.
+  -->
+  <footer>
+    &copy; 2024 Culinary Quest. All rights reserved.
+  </footer>
+  <button id="backToTopBtn" class="scroll-to-top-btn" title="Go to top">↑</button>
+
+  <!-- Search Results Modal -->
+  <div id="searchResultsModal" class="search-modal">
+    <div class="search-modal-content">
+      <span class="search-modal-close">&times;</span>
+      <div id="searchResultsContent"></div>
+    </div>
+  </div>
+</body>
+</html> 
